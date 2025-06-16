@@ -9,7 +9,7 @@ class Money_Counter():
         self.cd = False
 
     #saves flags
-    def save(self):
+    def rsave(self):
         self.x1 = self.fl1
         self.x2 = self.fl2
         self.x3 = self.fl3
@@ -18,7 +18,7 @@ class Money_Counter():
         self.x6 = self.fl6
 
     #sets to save
-    def set(self):
+    def save(self):
         self.fl1 = self.x1
         self.fl2 = self.x1
         self.fl3 = self.x3
@@ -30,18 +30,40 @@ class Money_Counter():
     def fltrue(self):
         self.fl1 = self.fl2 = self.fl3 = self.fl4 = self.fl5 = self.fl6 = True
 
+    def navigation(self, nvar):
+        if nvar == 'e':
+            exit()
+        elif nvar == 'r':
+            self.restart()
+        elif nvar == '':
+            return 0
+        elif nvar == '#1':
+            self.cd1()
+        elif nvar == '#5':
+            self.cd5()
+        elif nvar == '#10':
+            self.cd10()
+        elif nvar == '#20':
+            self.cd20()
+        elif nvar == '#50':
+            self.cd50()
+        elif nvar == '#100':
+            self.cd100()
+        elif nvar == 't':
+            self.cdcount()
+        else:
+        #sets to display error on next cycle
+            return True
+
     #changes to 1s
     def cd1(self):
         cd = True
-        self.save()
         self.fl1 = False
         self.mon()
 
     #changes to 5s
     def cd5(self):
         cd = True
-        self.save()
-        #self.fltrue()
         self.fl1 = True
         self.fl2 = False
         self.mon()
@@ -49,8 +71,6 @@ class Money_Counter():
     #changes to 10s
     def cd10(self):
         cd = True
-        self.save()
-        #self.fltrue()
         self.fl1 = self.fl2 = True
         self.fl3 = False
         self.mon()
@@ -58,8 +78,6 @@ class Money_Counter():
     #changes to 20s
     def cd20(self):
         cd = True
-        self.save()
-        #self.fltrue()
         self. fl1 = self.fl2 = self.fl3 = True
         self.fl4 = False
         self.mon()
@@ -67,8 +85,6 @@ class Money_Counter():
     #changes to 50s
     def cd50(self):
         cd = True
-        self.save()
-        #self.fltrue()
         self.fl1 = self.fl2 = self.fl3 = self.fl4 = True
         self.fl5 = False
         self.mon()
@@ -76,8 +92,6 @@ class Money_Counter():
     #changes to 100s
     def cd100(self):
         cd = True
-        self.save()
-        #self.fltrue()
         self.fl1 = self.fl2 = self.fl3 = self.fl4 = self.fl5 = True
         self.fl6 = False
         self.mon()
@@ -92,7 +106,7 @@ class Money_Counter():
             print('..... Must Be A Whole Number .....')
 
     #sets up variables and displays the header
-    def status(self):
+    def status(self, error):
         try:
             m1 = int(self.v1)
             n1 = m1
@@ -165,19 +179,24 @@ class Money_Counter():
 
         self.clear()
         self.fin = m1 + (m2*5) + (m3*10) + (m4*20) + (m5*50) + (m6*100)
-        print(f' #1:{n1} | #5:{n2} | #10:{n3} | #20:{n4} | #50:{n5} | #100:{n6} | ${self.fin}')
-        print('\nExit: "e"   | Restart: "r"   | Total: "t"\n')
+        bar = f"#1:{n1} | #5:{n2} | #10:{n3} | #20:{n4} | #50:{n5} | #100:{n6} | ${self.fin}"
+        length = len(bar)
+        evar = "-" * length
+        svar = " " * length
+        mvar = " " * (length - 49)
+        print(f'+{evar}+')
+        print(f'|#1:{n1} | #5:{n2} | #10:{n3} | #20:{n4} | #50:{n5} | #100:{n6} | ${self.fin}|')
+        print(f'|{svar}|')
+        print(f'| [E]xit         | [R]estart      | [T]otal       {mvar}|')
+        print(f'+{evar}+')
 
-    #displays back
-    def back(self):
-        print('\n<-- \nBack')
+        if error == True:
+            error = False
+            self.interror()
 
     #clears at start
     def clear(self):
-        if os.name == 'nt':
-            os.system('cls')
-        else:
-            os.system('clear')
+        os.system('cls' if os.name == 'nt' else 'clear')
 
     #clears and restarts
     def restart(self):
@@ -188,272 +207,149 @@ class Money_Counter():
 
     #after program finishes, propose an exit or restart.
     def end(self):
+        ie = False
         while True:
-            x = input('\n > ')
-            if x == 'e':
-                exit()
-            elif x == 'r':
-               self.restart()
-            elif x == '#1':
-                self.cd1()
-            elif x == '#5':
-                self.cd5()
-            elif x == '#10':
-                self.cd10()
-            elif x == '#20':
-                self.cd20()
-            elif x == '#50':
-                self.cd50()
-            elif x == '#100':
-                self.cd100()
-            elif x == 't':
-                self.count()
-            else:
-                print('..... Invalid .....')
+            if ie == True:
+                self.interror()
+            var = input('\n > ')
+            ie = self.navigation(nvar=var)
+
 
     #asks user how many ones
     def f1(self):
         self.v1 = 0
         ie = False
         while True:
-            self.status()
-            if ie == True:
-                ie = False
-                self.interror()
-            else:
-                try:
-                    one = input('How many 1s?\n > ')
+            self.status(error=ie)
+            try:
+                one = input('How many 1s?\n > ')
+                if not one:
+                    o = 0
+                else:
                     o = int(one)
-                    self.fl1 = True
-                    return o
-
-                except:
-                #navigation
-                    if one == 'e':
-                        exit()
-                    elif one == 'r':
-                        self.restart()
-                    elif one == '#1':
-                        self.cd1()
-                    elif one == '#5':
-                        self.cd5()
-                    elif one == '#10':
-                        self.cd10()
-                    elif one == '#20':
-                        self.cd20()
-                    elif one == '#50':
-                        self.cd50()
-                    elif one == '#100':
-                        self.cd100()
-                    elif one == 't':
-                        self.cdcount()
-                    else:
-                    #sets to display error on next cycle
-                        ie = True
+                self.fl1 = True
+                return o
+            except:
+                ie = self.navigation(nvar= one)
 
     #asks user how many fives
     def f2(self):
         self.v2 = 0
         ie = False
         while True:
-            self.status()
-            if ie == True:
-                ie = False
-                self.interror()
-            else:
-                try:
-                    five = input('How many 5s?\n > ')
+            self.status(error=ie)
+            try:
+                five = input('How many 5s?\n > ')
+                if not five:
+                    f = 0
+                else:
                     f = int(five)
-                    self.fl2 = True
-                    return f
-
-                except:
-                #navigation
-                    if five == 'e':
-                        exit()
-                    elif five == 'r':
-                        self.restart()
-                    elif five == '#1':
-                        self.cd1()
-                    elif five == '#5':
-                        self.cd5()
-                    elif five == '#10':
-                        self.cd10()
-                    elif five == '#20':
-                        self.cd20()
-                    elif five == '#50':
-                        self.cd50()
-                    elif five == '#100':
-                        self.cd100()
-                    elif five == 't':
-                        self.cdcount()
-                    else:
-                    #sets error to display on next cycle
-                        ie = True
+                self.fl2 = True
+                return f
+            except:
+                ie = self.navigation(nvar= five)
 
     #asks user how many tens
     def f3(self):
         self.v3 = 0
         ie = False
         while True:
-            self.status()
-            if ie == True:
-                ie = False
-                self.interror()
-            else:
-                try:
-                    ten = input('How many 10s?\n > ')
+            self.status(error=ie)
+            try:
+                ten = input('How many 10s?\n > ')
+                if not ten:
+                    t = 0
+                else:
                     t = int(ten)
-                    self.fl3 = True
-                    return t
-
-                except:
-                #navigation
-                    if ten == 'e':
-                        exit()
-                    elif ten == 'r':
-                        self.restart()
-                    elif ten == '#1':
-                        self.cd1()
-                    elif ten == '#5':
-                        self.cd5()
-                    elif ten == '#10':
-                        self.cd10()
-                    elif ten == '#20':
-                        self.cd20()
-                    elif ten == '#50':
-                        self.cd50()
-                    elif ten == '#100':
-                        self.cd100()
-                    elif ten == 't':
-                        self.cdcount()
-                    else:
-                    #sets error to display on next cycle
-                        ie = True
-
+                self.fl3 = True
+                return t
+            except:
+                ie = self.navigation(nvar= ten)
+                    
     #asks user how many twenties
     def f4(self):
         self.v4 = 0
         ie = False
         while True:
-            self.status()
-            if ie == True:
-                ie = False
-                self.interror()
-            else:
-                try:
-                    twenty = input('How many 20s?\n > ')
+            self.status(error=ie)
+            try:
+                twenty = input('How many 20s?\n > ')
+                if not twenty:
+                    tw = 0
+                else:
                     tw = int(twenty)
-                    self.fl4 = True
-                    return tw
-
-                except:
-                #navigation
-                    if twenty == 'e':
-                        exit()
-                    elif twenty == 'r':
-                        self.restart()
-                    elif twenty == '#1':
-                        self.cd1()
-                    elif twenty == '#5':
-                        self.cd5()
-                    elif twenty == '#10':
-                        self.cd10()
-                    elif twenty == '#20':
-                        self.cd20()
-                    elif twenty == '#50':
-                        self.cd50()
-                    elif twenty == '#100':
-                        self.cd100()
-                    elif twenty == 't':
-                        self.cdcount()
-                    else:
-                    #sets error to display on next cycle
-                        ie = True
-
+                self.fl4 = True
+                return tw
+            except:
+                ie = self.navigation(nvar=twenty)
+                    
     #asks user how many fifties
     def f5(self):
         self.v5 = 0
         ie = False
         while True:
-            self.status()
-            if ie:
-                ie = False
-                self.interror()
-            else:
-                try:
-                    fifty = input('How many 50s?\n > ')
+            self.status(error=ie)
+            try:
+                fifty = input('How many 50s?\n > ')
+                if not fifty:
+                    fif = 0
+                else:
                     fif = int(fifty)
-                    self.fl5 = True
-                    return fif
-
-                except:
-                #navigation
-                    if fifty == 'e':
-                        exit()
-                    elif fifty == 'r':
-                        self.restart()
-                    elif fifty == '#1':
-                        self.cd1()
-                    elif fifty == '#5':
-                        self.cd5()
-                    elif fifty == '#10':
-                        self.cd10()
-                    elif fifty == '#20':
-                        self.cd20()
-                    elif fifty == '#50':
-                        self.cd50()
-                    elif fifty == '#100':
-                        self.cd100()
-                    elif fifty == 't':
-                        self.cdcount()
-                    else:
-                    #sets error to display on next cycle
-                        ie = True
-
+                self.fl5 = True
+                return fif
+            except:
+                ie = self.navigation(nvar=fifty)
+                    
     #asks user how many hundreds
     def f6(self):
         self.v6 = 0
         ie = False
         while True:
-            self.status()
-            if ie == True:
-                ie = False
-                self.interror()
-            else:
-                try:
-                    hundo = input('How many 100s?\n > ')
+            self.status(error=ie)
+            try:
+                hundo = input('How many 100s?\n > ')
+                if not hundo:
+                    hun = 0
+                else:
                     hun = int(hundo)
-                    self.fl6 = True
-                    return hun
-
-                except:
-                    if hundo == 'e':
-                        self.exit()
-                    elif hundo == 'r':
-                        self.restart()
-                    elif hundo == '#1':
-                        self.cd1()
-                    elif hundo == '#5':
-                        self.cd5()
-                    elif hundo == '#10':
-                        self.cd10()
-                    elif hundo == '#20':
-                        self.cd20()
-                    elif hundo == '#50':
-                        self.cd50()
-                    elif hundo == '#100':
-                        self.cd100()
-                    elif hundo == 't':
-                        self.cdcount
-                    else:
-                    #sets error to be displayed on next cycle
-                        ie = True
-
+                self.fl6 = True
+                return hun
+            except:
+                ie = self.navigation(nvar=hundo)
+                    
     #count the bills and add the value. Print in a user friendly output.
     def count(self):
-        self.status()
-        print(f'Bill ~ # \n1 ~~~~ {self.v1} \n5 ~~~~ {self.v2} \n10 ~~~ {self.v3} \n20 ~~~ {self.v4} \n50 ~~~ {self.v5} \n100 ~~ {self.v6} \nTotal: ${self.fin}')
+        ie = False
+        self.status(error=ie)
+
+        rb = f"bill ~ #"
+        r1 = f"1 ~~~~ {self.v1}"
+        r2 = f"5 ~~~~ {self.v2}"
+        r3 = f"10 ~~~ {self.v3}"
+        r4 = f"20 ~~~ {self.v4}"
+        r5 = f"50 ~~~ {self.v5}"
+        r6 = f"100 ~~ {self.v6}"
+        rf = f"Total: ${self.fin}"
+
+        lb = len(rb)
+        l1 = len(r1)
+        l2 = len(r2)
+        l3 = len(r3)
+        l4 = len(r4)
+        l5 = len(r5)
+        l6 = len(r6)
+        lf = len(rf)
+        
+        print(f'+{"-" * lf}+\n'
+              f'|Bill ~ #{" " * (lf - lb)}|\n'
+              f'|1 ~~~~ {self.v1}{" " * (lf - l1)}|\n'
+              f'|5 ~~~~ {self.v2}{" " * (lf - l2)}|\n'
+              f'|10 ~~~ {self.v3}{" " * (lf - l3)}|\n'
+              f'|20 ~~~ {self.v4}{" " * (lf - l4)}|\n'
+              f'|50 ~~~ {self.v5}{" " * (lf - l5)}|\n'
+              f'|100 ~~ {self.v6}{" " * (lf - l6)}|\n'
+              f'|Total: ${self.fin}|\n'
+              f'+{"-" * lf}+')
         self.end()
 
     #runs the program
